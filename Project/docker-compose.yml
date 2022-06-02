@@ -1,0 +1,48 @@
+version: '3'
+services:
+  mysql-standalone:
+    image: 'mysql:5.7'
+    environment:
+      - MYSQL_ROOT_PASSWORD=XXXXX
+      - MYSQL_PASSWORD=XXXXX
+      - MYSQL_DATABASE=project
+    ports:
+      - "3307:3306"
+  springboot-docker-container:
+    image: springboot-docker-container
+    ports:
+      - "9090:9090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-standalone:3306/project?autoReconnect=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: "XXXXX"
+      SPRING_DATASOURCE_PASSWORD: "XXXXX"
+    build:
+      context: "./"
+      dockerfile: "DockerFile"
+    depends_on:
+      - mysql-standalone
+
+  frontend:
+    build: 
+      context: "./frontend" 
+      dockerfile: "DockerFile"
+ 
+    container_name: projectfrontend   
+    ports:
+      - "8081:80" 
+    restart: always
+    depends_on:
+      - mysql-standalone
+   #If needed we can separate the backend and frontend and create a network   
+   # networks:
+   #   - frontend 
+ # Volumes
+#volumes:
+ # db-data:
+
+# Networks to be created to facilitate communication between containers
+#networks:
+#  backend:
+ # frontend:   
+      
+      
